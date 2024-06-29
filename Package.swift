@@ -19,6 +19,7 @@ let package = Package(
     products: [
         .plugin(name: "Swift-DocC", targets: ["Swift-DocC"]),
         .plugin(name: "Swift-DocC Preview", targets: ["Swift-DocC Preview"]),
+        .plugin(name: "Swift-DocC MultiTargets", targets: ["Swift-DocC MultiTargets"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-docc-symbolkit", from: "1.0.0"),
@@ -35,7 +36,7 @@ let package = Package(
             path: "Plugins/Swift-DocC Convert",
             exclude: ["Symbolic Links/README.md"]
         ),
-        
+
         .plugin(
             name: "Swift-DocC Preview",
             capability: .command(
@@ -49,7 +50,19 @@ let package = Package(
             ],
             exclude: ["Symbolic Links/README.md"]
         ),
-        
+
+        .plugin(
+            name: "Swift-DocC MultiTargets",
+            capability: .command(
+                intent: .custom(verb: "generate-documentation-multitarget", description: "Generate documentation for multiple targets.")
+//                permissions: [.writeToPackageDirectory(reason: "To write documentation files to the package directory.")]
+            ),
+            dependencies: [
+                "snippet-extract",
+            ],
+            path: "Plugins/Swift-DocC MultiTargets"
+        ),
+
         .target(name: "SwiftDocCPluginUtilities"),
         .testTarget(
             name: "SwiftDocCPluginUtilitiesTests",
@@ -62,7 +75,7 @@ let package = Package(
                 .copy("Test Fixtures"),
             ]
         ),
-        
+
         // Empty target that builds the DocC catalog at /SwiftDocCPluginDocumentation/SwiftDocCPlugin.docc.
         // The SwiftDocCPlugin catalog includes high-level, user-facing documentation about using
         // the Swift-DocC plugin from the command-line.
@@ -77,6 +90,7 @@ let package = Package(
             dependencies: [
                 "Snippets",
                 .product(name: "SymbolKit", package: "swift-docc-symbolkit"),
-            ]),
+            ]
+        ),
     ]
 )
